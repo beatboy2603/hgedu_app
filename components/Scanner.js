@@ -45,10 +45,18 @@ export default function Scanner() {
     );
   }
   if (data.croppedImage) {
-    const host = 'http://192.168.1.2:8084/';
+    console.log("sending");
+    const host = 'http://192.168.43.176:8084/';
     const URL = host + 'file-upload';
     const form = new FormData();
-    form.append('image', data.croppedImage);
+    let photoArray = data.croppedImage.split("/");
+    let photoName = photoArray[photoArray.length-1];
+    let photo = {
+      name: photoName,
+      type: 'image/jpeg',
+      uri: data.croppedImage,
+    }
+    form.append('image', photo);
     form.append(
       'dateCreated',
       new Date()
