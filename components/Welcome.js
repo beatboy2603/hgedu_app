@@ -13,7 +13,7 @@ export default function Welcome(props) {
         style={styles.preview}
       />
       <TouchableOpacity onPress={handleOnPressExplore} style={styles.button}>
-        <Text style={styles.buttonText}>Explore</Text>
+        <Text style={styles.buttonText}>Tiếp tục</Text>
       </TouchableOpacity>
     </View>
   );

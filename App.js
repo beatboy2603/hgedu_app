@@ -18,9 +18,16 @@ import {createBottomTabNavigator} from 'react-navigation-tabs';
 import Home from './components/Home';
 import SheetScanning from './components/SheetScanning';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Result from './components/Result';
 
 const AppNavigator = createStackNavigator(
   {
+    ScanResult: {
+      screen: Result,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
     ScanCam: {
       screen: Scanner,
       navigationOptions: {
@@ -65,7 +72,7 @@ const Tabs = createBottomTabNavigator(
     Home: {
       screen: Home,
       navigationOptions: {
-        title: 'Home',
+        title: 'Trang chủ',
         tabBarIcon: ({tintColor}) => (
           <Icon name="home" size={17} color={tintColor} />
         ),
@@ -74,7 +81,7 @@ const Tabs = createBottomTabNavigator(
     TestScanning: {
       screen: AppNavigator,
       navigationOptions: {
-        title: 'Scan Sheets',
+        title: 'Quét bài kiểm tra',
         tabBarIcon: ({tintColor}) => (
           <Icon name="tasks" size={17} color={tintColor} />
         ),

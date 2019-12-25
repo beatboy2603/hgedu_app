@@ -11,7 +11,7 @@ import Permissions from 'react-native-permissions';
 import PDFScanner from '@woonivers/react-native-document-scanner';
 import axios from 'axios';
 
-export default function Scanner() {
+export default function Scanner(props) {
   const pdfScannerElement = useRef(null);
   const [data, setData] = useState({});
   const [allowed, setAllowed] = useState(false);
@@ -45,17 +45,20 @@ export default function Scanner() {
     );
   }
   if (data.croppedImage) {
-    console.log("sending");
-    const host = 'http://192.168.43.176:8084/';
+    console.log('sending');
+    const host = 'http://192.168.0.2:8084/';
     const URL = host + 'file-upload';
     const form = new FormData();
-    let photoArray = data.croppedImage.split("/");
-    let photoName = photoArray[photoArray.length-1];
+    let photoArray = data.croppedImage.split('/');
+    let photoName = photoArray[photoArray.length - 1];
     let photo = {
       name: photoName,
       type: 'image/jpeg',
-      uri: data.croppedImage,
-    }
+      uri:
+        Platform.OS === 'android'
+          ? data.croppedImage
+          : data.croppedImage.replace('file://', ''),
+    };
     form.append('image', photo);
     form.append(
       'dateCreated',
@@ -72,8 +75,22 @@ export default function Scanner() {
       .then(res => {
         if (res != null) {
           console.log('upload successfully');
+          let imageLink = {image: res.data};
+          console.log('imageLink', imageLink);
+          console.log('id', props.navigation.getParam('testId', -1));
+          axios
+            .post(
+              host + 'api/omr/' + props.navigation.getParam('testId', -1),
+              imageLink,
+            )
+            .then(result => {
+              props.navigation.navigate('ScanResult', {result: result.data});
+            })
+            .catch(e => {
+              console.log(e);
+            });
         } else {
-          console.error(res.data);
+          console.log('failed');
         }
       })
       .catch(e => {

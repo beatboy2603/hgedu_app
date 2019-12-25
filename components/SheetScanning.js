@@ -5,31 +5,51 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import axios from 'axios';
 
 export default function SheetScanning(props) {
-  const classRef = React.createRef();
-  const testRef = React.createRef();
+  const testCodeRef = React.createRef();
+  const userRef = React.createRef();
+  const [error, setError] = React.useState('');
+  const [test, setTest] = React.useState({});
 
   function onClassSubmit() {
-    let {current: field} = classRef;
+    let {current: field} = testCodeRef;
 
     console.log(field.value());
   }
 
   function onTestSubmit() {
-    let {current: field} = testRef;
+    let {current: field} = userRef;
 
     console.log(field.value());
   }
 
-  function formatText(text) {
-    return text.replace(/[^+\d]/g, '');
-  }
+  // function formatText(text) {
+  //   return text.replace(/[^+\d]/g, '');
+  // }
 
   function handleOnPressExplore() {
-    // axios
-    //   .get('http://192.168.1.2:8084/api/class/' + 101)
-    //   .then(res => console.log(res))
-    //   .catch(error => console.log(error));
-    props.navigation.navigate('ScanCam');
+    let {current: testCodeField} = testCodeRef;
+    let {current: emailField} = userRef;
+    console.log(testCodeField.value());
+    console.log(emailField.value());
+    axios
+      .get(
+        'http://192.168.0.2:8084/api/omr/' +
+          emailField.value() +
+          '/' +
+          testCodeField.value(),
+      )
+      .then(res => {
+        if (res.data) {
+          if (res.data === 'Either test code or email is wrong!') {
+            setError('Either test code or email is wrong!');
+          } else {
+            setTest(res.data);
+            console.log('testId', res.data.id);
+            props.navigation.navigate('ScanCam', {testId: res.data.id});
+          }
+        }
+      })
+      .catch(e => console.log(e));
   }
 
   return (
@@ -40,33 +60,37 @@ export default function SheetScanning(props) {
         keyboardShouldPersistTaps="handled">
         <View style={styles.scanner}>
           <TextField
-            label="Class ID"
-            //title="Choose a class"
+            label="Mã bài kiểm tra"
+            //title="Enter your test code"
             style={styles.inputStyle}
-            keyboardType="phone-pad"
+            autoCapitalize="none"
+            autoCorrect={false}
             enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
-            formatText={formatText}
+            returnKeyType="next"
+            //formatText={formatText}
             onSubmitEditing={onClassSubmit}
-            ref={classRef}
+            ref={testCodeRef}
           />
           <TextField
-            label="Test ID"
-            //title="Choose a test"
+            label="Email"
+            //title="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
             style={styles.inputStyle}
-            keyboardType="phone-pad"
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
-            formatText={formatText}
+            //formatText={formatText}
             onSubmitEditing={onTestSubmit}
-            ref={testRef}
+            ref={userRef}
           />
         </View>
+        <Text style={styles.errorStyle}>{error}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={handleOnPressExplore}
             style={styles.button}>
-            <Text style={styles.buttonText}>Start Scan</Text>
+            <Text style={styles.buttonText}>Bắt đầu</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -120,5 +144,9 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     width: 240,
+  },
+  errorStyle: {
+    color: 'red',
+    textAlign: 'center',
   },
 });
