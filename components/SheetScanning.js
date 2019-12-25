@@ -33,7 +33,7 @@ export default function SheetScanning(props) {
     console.log(emailField.value());
     axios
       .get(
-        'http://192.168.0.2:8084/api/omr/' +
+        'https://hgedu-server.herokuapp.com/api/omr/' +
           emailField.value() +
           '/' +
           testCodeField.value(),

@@ -46,7 +46,7 @@ export default function Scanner(props) {
   }
   if (data.croppedImage) {
     console.log('sending');
-    const host = 'http://192.168.0.2:8084/';
+    const host = 'https://hgedu-server.herokuapp.com/';
     const URL = host + 'file-upload';
     const form = new FormData();
     let photoArray = data.croppedImage.split('/');
